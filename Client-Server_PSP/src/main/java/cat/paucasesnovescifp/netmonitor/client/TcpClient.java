@@ -41,7 +41,16 @@ public class TcpClient {
                 System.out.println("4.- BYE");
                 System.out.println("5.- SHUTDOWN");
                 System.out.print("> ");
-                String line = sc.nextLine().toLowerCase().trim();
+                String line = sc.nextLine().trim();
+                if (line.isEmpty()) continue;
+                if (line.equalsIgnoreCase("echo")) {
+                    System.out.print("Escribe el texto a enviar:");
+                    String text = sc.nextLine().trim();
+                    out.println("echo "+text);
+                }else {
+                    out.println(line);
+
+                }
 
                 String resp = in.readLine();
                 if (resp != null) {
@@ -54,6 +63,7 @@ public class TcpClient {
 
 
             udpSocket.close();
+            sc.close();
             System.out.println("Cliente cerrado.");
         } catch (IOException e) {
             System.out.println("Error cliente: " + e.getMessage());

@@ -30,7 +30,7 @@ public class TCPServer {
 
                 Thread hilo = new Thread(ch);
                 hilo.start();
-
+                System.out.println("[TCP] Cliente conectado: "+client.getInetAddress().getHostAddress() + client.getPort());
                 broadcaster.broadcast("Se ha conectado el cliente: "+ client.getInetAddress(),getClients());
                 broadcaster.broadcast("Hay "+ clientesConectados.size()+" clientes conectados",getClients());
             }

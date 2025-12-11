@@ -31,23 +31,23 @@ public class ClientHandler implements Runnable{
 
             while ((line = in.readLine()) != null) {
                 line = line.trim();
-                if(line.equals("time")){
+                if(line.equalsIgnoreCase("time")){
                     String hora = LocalDateTime.now().toString();
                     sendMessage("Hora: "+hora);
-                } else if (line.equals("echo")) {
+                } else if (line.toLowerCase().startsWith("echo")) {
                     //String echo = in.readLine();
                     String text = line.substring(5);
                     sendMessage("Mensaje: "+text);
-                } else if (line.equals("count")) {
+                } else if (line.equalsIgnoreCase("count")) {
                     sendMessage("Count: "+TCPServer.clientesConectados.size());
-                } else if (line.equals("shutdown")) {
-                    if(client.getInetAddress().toString().equals("127.0.0.1")){
+                } else if (line.equalsIgnoreCase("shutdown")) {
+                    if(client.getInetAddress().toString().equalsIgnoreCase("127.0.0.1")){
                         sendMessage("apagando servidor...");
                         System.exit(0);
                     } else {
                         sendMessage("Shutdown solo desde localhost");
                     }
-                } else if (line.equals("udpport")) {
+                } else if (line.toLowerCase().startsWith("udpport")) {
                     try {
                         int port = Integer.parseInt(line.substring(8).trim());
                         this.udpPort = port;
@@ -84,6 +84,7 @@ public class ClientHandler implements Runnable{
 
         TCPServer.clientesConectados.remove(this);
         TCPServer.removeClient(client.getInetAddress(), udpPort);
+        System.out.println("[TCP] Cliente desconectado: "+client.getInetAddress().getHostAddress() + client.getPort());
         UdpBroadcaster broadcaster = TCPServer.broadcaster;
         if (broadcaster!=null){
             broadcaster.broadcast("Se ha conectado el cliente: "+ client.getInetAddress(),TCPServer.getClients());
