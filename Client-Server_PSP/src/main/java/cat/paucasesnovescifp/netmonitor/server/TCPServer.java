@@ -23,6 +23,7 @@ public class TCPServer {
         }
         try (ServerSocket server = new ServerSocket(port)){
             while (true) {
+                System.out.println("Servidor Iniciado...");
                 Socket client = server.accept();
 
                 ClientHandler ch = new ClientHandler(client);

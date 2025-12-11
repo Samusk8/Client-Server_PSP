@@ -20,7 +20,7 @@ public class ClientHandler implements Runnable{
 
     @Override
     public void run() {
-        System.out.println("Client handler inisiau");
+        System.out.println("Client handler iniciado");
         try {
             out = new PrintWriter(client.getOutputStream(),true);
             in = new BufferedReader(new InputStreamReader(client.getInputStream()));
@@ -43,6 +43,7 @@ public class ClientHandler implements Runnable{
                 } else if (line.equalsIgnoreCase("shutdown")) {
                     if(client.getInetAddress().toString().equalsIgnoreCase("127.0.0.1")){
                         sendMessage("apagando servidor...");
+                        disconnect();
                         System.exit(0);
                     } else {
                         sendMessage("Shutdown solo desde localhost");
@@ -71,11 +72,11 @@ public class ClientHandler implements Runnable{
         out.flush();
     }
 
-    private void broadcast(String message){
+    /*private void broadcast(String message){
         for (ClientHandler ch : TCPServer.clientesConectados) {
             ch.sendMessage(message);
         }
-    }
+    }*/
 
     private void disconnect() throws IOException {
         try {

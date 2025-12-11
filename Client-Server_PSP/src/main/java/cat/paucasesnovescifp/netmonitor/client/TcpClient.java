@@ -58,11 +58,13 @@ public class TcpClient {
                 }
                 if (line.equalsIgnoreCase("BYE") || line.equalsIgnoreCase("SHUTDOWN")) {
                     running = false;
+                    out.println("BYE");
                 }
             }
 
 
             udpSocket.close();
+            tcpSocket.close();
             sc.close();
             System.out.println("Cliente cerrado.");
         } catch (IOException e) {
