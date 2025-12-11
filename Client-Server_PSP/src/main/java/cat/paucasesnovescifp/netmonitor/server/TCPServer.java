@@ -7,7 +7,7 @@ import java.util.List;
 
 public class TCPServer {
     public static int port = 5000;
-    public static List<ClientHandler> handlers = new ArrayList<>();
+    public static List<ClientHandler> clientesConectados  = new ArrayList<>();
     public static List<ClientInfo> clientes = new ArrayList<>();
 
     static void main() {
@@ -16,7 +16,7 @@ public class TCPServer {
                 Socket client = server.accept();
 
                 ClientHandler ch = new ClientHandler(client);
-                handlers.add(ch);
+                clientesConectados.add(ch);
 
                 Thread hilo = new Thread(ch);
                 hilo.start();
