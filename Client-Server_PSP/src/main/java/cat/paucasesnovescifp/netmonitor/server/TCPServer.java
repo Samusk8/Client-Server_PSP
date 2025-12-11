@@ -1,5 +1,6 @@
 package cat.paucasesnovescifp.netmonitor.server;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -9,7 +10,7 @@ import java.util.List;
 
 public class TCPServer {
     public static int port = 5000;
-    public static int udpPort = 5001;
+    public static int udpPort = 6000;
     public static List<ClientHandler> clientesConectados  = new ArrayList<>();
     public static List<ClientInfo> clientes = new ArrayList<>();
     public static UdpBroadcaster broadcaster;
@@ -22,8 +23,8 @@ public class TCPServer {
             return;
         }
         try (ServerSocket server = new ServerSocket(port)){
+            System.out.println("Servidor Iniciado...");
             while (true) {
-                System.out.println("Servidor Iniciado...");
                 Socket client = server.accept();
 
                 ClientHandler ch = new ClientHandler(client);
@@ -65,6 +66,21 @@ public class TCPServer {
     public static List<ClientInfo> getClients() {
         synchronized (clientes){
             return List.copyOf(clientes);
+        }
+    }
+
+    public static void notifyAllClients(String message) {
+        if (broadcaster != null) {return;}
+        try{
+            List<ClientInfo> lista = clientes;
+            if (!lista.isEmpty()) {
+                broadcaster.broadcast(message,lista);
+                System.out.println("[UDP] Mensaje enviado: "+message);
+            }else {
+                System.out.println("[UDP] No hay clientes conectados");
+            }
+        } catch (IOException e) {
+            System.out.println("Error de UDP");
         }
     }
 }

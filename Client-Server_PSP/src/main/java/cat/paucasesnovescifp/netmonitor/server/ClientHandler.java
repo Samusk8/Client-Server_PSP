@@ -40,10 +40,13 @@ public class ClientHandler implements Runnable{
                     sendMessage("Mensaje: "+text);
                 } else if (line.equalsIgnoreCase("count")) {
                     sendMessage("Count: "+TCPServer.clientesConectados.size());
+                } else if (line.equalsIgnoreCase("bye")) {
+                    sendMessage("Cliente "+ client.getInetAddress().getHostName() +" desconectado");
+                    disconnect();
+                    break;
                 } else if (line.equalsIgnoreCase("shutdown")) {
                     if(client.getInetAddress().toString().equalsIgnoreCase("127.0.0.1")){
                         sendMessage("apagando servidor...");
-                        disconnect();
                         System.exit(0);
                     } else {
                         sendMessage("Shutdown solo desde localhost");
@@ -82,15 +85,16 @@ public class ClientHandler implements Runnable{
         try {
             if (client != null && !client.isClosed()) client.close();
         } catch (IOException e) {}
-
-        TCPServer.clientesConectados.remove(this);
+        synchronized (TCPServer.clientesConectados){
+            TCPServer.clientesConectados.remove(this);
+        }
         TCPServer.removeClient(client.getInetAddress(), udpPort);
         System.out.println("[TCP] Cliente desconectado: "+client.getInetAddress().getHostAddress() + client.getPort());
         UdpBroadcaster broadcaster = TCPServer.broadcaster;
-        if (broadcaster!=null){
-            broadcaster.broadcast("Se ha conectado el cliente: "+ client.getInetAddress(),TCPServer.getClients());
-            broadcaster.broadcast("Hay "+ TCPServer.clientesConectados.size()+" clientes conectados",TCPServer.getClients());
-        }
+
+            TCPServer.notifyAllClients("Se ha conectado el cliente: "+ client.getInetAddress());
+            TCPServer.notifyAllClients("Hay "+ TCPServer.clientesConectados.size()+" clientes conectados");
+
 
     }
 }
