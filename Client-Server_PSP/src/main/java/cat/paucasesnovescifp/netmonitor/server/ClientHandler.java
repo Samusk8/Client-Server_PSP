@@ -11,7 +11,7 @@ public class ClientHandler implements Runnable{
     private Socket client;
     private PrintWriter out;
     private BufferedReader in;
-
+    private int udpPort;
 
     public ClientHandler(Socket client) {
         this.client = client;
@@ -50,6 +50,7 @@ public class ClientHandler implements Runnable{
                 } else if (line.equals("udpport")) {
                     try {
                         int port = Integer.parseInt(line.substring(8).trim());
+                        this.udpPort = port;
 
                         ClientInfo cliente = new ClientInfo(client.getInetAddress(),port);
                         TCPServer.addClient(cliente);
@@ -74,5 +75,20 @@ public class ClientHandler implements Runnable{
         for (ClientHandler ch : TCPServer.clientesConectados) {
             ch.sendMessage(message);
         }
+    }
+
+    private void disconnect(){
+        try {
+            if (client != null && !client.isClosed()) client.close();
+        } catch (IOException e) {}
+
+        TCPServer.clientesConectados.remove(this);
+        TCPServer.removeClient(client.getInetAddress(), udpPort);
+        UdpBroadcaster broadcaster = TCPServer.broadcaster;
+        if (broadcaster!=null){
+            broadcaster.broadcast("Se ha conectado el cliente: "+ client.getInetAddress(),TCPServer.getClients());
+            broadcaster.broadcast("Hay "+ TCPServer.clientesConectados.size()+" clientes conectados",TCPServer.getClients());
+        }
+
     }
 }

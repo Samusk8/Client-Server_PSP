@@ -1,16 +1,26 @@
 package cat.paucasesnovescifp.netmonitor.server;
 
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TCPServer {
     public static int port = 5000;
+    public static int udpPort = 5001;
     public static List<ClientHandler> clientesConectados  = new ArrayList<>();
     public static List<ClientInfo> clientes = new ArrayList<>();
+    public static UdpBroadcaster broadcaster;
 
     static void main() {
+        try{
+            broadcaster = new UdpBroadcaster(udpPort);
+        } catch (SocketException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
         try (ServerSocket server = new ServerSocket(port)){
             while (true) {
                 Socket client = server.accept();
@@ -20,6 +30,9 @@ public class TCPServer {
 
                 Thread hilo = new Thread(ch);
                 hilo.start();
+
+                broadcaster.broadcast("Se ha conectado el cliente: "+ client.getInetAddress(),getClients());
+                broadcaster.broadcast("Hay "+ clientesConectados.size()+" clientes conectados",getClients());
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -42,5 +55,15 @@ public class TCPServer {
         }
     }
 
-    public static void removeClient(ClientInfo c){}
+    public static void removeClient(InetAddress address, int udpPort){
+        synchronized (clientes){
+            clientes.removeIf(c -> c.getAddress().equals(address) && c.getUdpPort() == udpPort);
+        }
+    }
+
+    public static List<ClientInfo> getClients() {
+        synchronized (clientes){
+            return List.copyOf(clientes);
+        }
+    }
 }
