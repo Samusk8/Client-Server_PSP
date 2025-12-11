@@ -77,7 +77,7 @@ public class ClientHandler implements Runnable{
         }
     }
 
-    private void disconnect(){
+    private void disconnect() throws IOException {
         try {
             if (client != null && !client.isClosed()) client.close();
         } catch (IOException e) {}
