@@ -41,7 +41,7 @@ public class ClientHandler implements Runnable{
                 } else if (line.equals("count")) {
                     sendMessage("Count: "+TCPServer.clientesConectados.size());
                 } else if (line.equals("shutdown")) {
-                    if(client.getInetAddress().equals("127.0.0.1")){
+                    if(client.getInetAddress().toString().equals("127.0.0.1")){
                         sendMessage("apagando servidor...");
                         System.exit(0);
                     } else {
