@@ -45,7 +45,7 @@ public class ClientHandler implements Runnable{
                     disconnect();
                     break;
                 } else if (line.equalsIgnoreCase("shutdown")) {
-                    if(client.getInetAddress().toString().equalsIgnoreCase("127.0.0.1")){
+                    if(client.getInetAddress().toString().equalsIgnoreCase("/127.0.0.1")){
                         sendMessage("apagando servidor...");
                         System.exit(0);
                     } else {
